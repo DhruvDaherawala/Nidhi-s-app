@@ -3,8 +3,13 @@ import dbConnect from '@/lib/db';
 import Product from '@/models/Product';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    await dbConnect();
-    const products = await Product.find({}).select('_id updatedAt');
+    let products = [];
+    try {
+        await dbConnect();
+        products = await Product.find({}).select('_id updatedAt');
+    } catch (error) {
+        console.warn('Could not fetch products for sitemap:', error);
+    }
 
     const productUrls = products.map((product) => ({
         url: `https://enchantstitch.com/products/${product._id}`,
